@@ -1,8 +1,6 @@
 # Vietnamese Named Entity Recognition (vie-ner-lstm)
 -----------------------------------------------------------------
 
-test thu nhe
-
 Code by **Thai-Hoang Pham** at Alt Inc. 
 
 ## 1. Introduction
