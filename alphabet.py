@@ -41,7 +41,7 @@ class Alphabet:
         try:
             return self.instances[index - 1]
         except IndexError:
-            print 'unknown instance, return the first label.'
+            print('unknown instance, return the first label.')
             return self.instances[0]
 
     def size(self):
@@ -79,7 +79,7 @@ class Alphabet:
         try:
             json.dump(self.get_content(), open(os.path.join(output_directory, saving_name + ".json"), 'w'))
         except Exception as e:
-            print "Alphabet is not saved"
+            print("Alphabet is not saved")
 
     def load(self, input_directory, name=None):
         """

@@ -1,17 +1,17 @@
 import codecs
 from alphabet import Alphabet
 import numpy as np
-import cPickle as pickle
+import pickle5 as pickle
 
 
 def read_conll_format(input_file):
     with codecs.open(input_file, 'r', 'utf-8') as f:
         word_list = []
-        chunk_list = []
+        # chunk_list = []
         pos_list = []
         tag_list = []
         words = []
-        chunks = []
+        # chunks = []
         poss = []
         tags = []
         num_sent = 0
@@ -21,21 +21,21 @@ def read_conll_format(input_file):
             if len(line) > 0:
                 words.append(map_number_and_punct(line[0].lower()))
                 poss.append(line[1])
-                chunks.append(line[2])
-                tags.append(line[3])
+                # chunks.append(line[2])
+                tags.append(line[2])
             else:
                 word_list.append(words)
                 pos_list.append(poss)
-                chunk_list.append(chunks)
+                # chunk_list.append(chunks)
                 tag_list.append(tags)
                 sent_length = len(words)
                 words = []
-                chunks = []
+                # chunks = []
                 poss = []
                 tags = []
                 num_sent += 1
                 max_length = max(max_length, sent_length)
-    return word_list, pos_list, chunk_list, tag_list, num_sent, max_length
+    return word_list, pos_list, tag_list, num_sent, max_length
 
 
 def map_number_and_punct(word):
@@ -72,19 +72,19 @@ def map_string_2_id_close(string_list, alphabet_string):
     return string_id_list
 
 
-def map_string_2_id(pos_list_train, pos_list_dev, pos_list_test, chunk_list_train, chunk_list_dev, chunk_list_test,
+def map_string_2_id(pos_list_train, pos_list_dev, pos_list_test, \
                     tag_list_train, tag_list_dev, tag_list_test):
     pos_id_list_train, alphabet_pos = map_string_2_id_open(pos_list_train, 'pos')
     pos_id_list_dev = map_string_2_id_close(pos_list_dev, alphabet_pos)
     pos_id_list_test = map_string_2_id_close(pos_list_test, alphabet_pos)
-    chunk_id_list_train, alphabet_chunk = map_string_2_id_open(chunk_list_train, 'chunk')
-    chunk_id_list_dev = map_string_2_id_close(chunk_list_dev, alphabet_chunk)
-    chunk_id_list_test = map_string_2_id_close(chunk_list_test, alphabet_chunk)
+    # chunk_id_list_train, alphabet_chunk = map_string_2_id_open(chunk_list_train, 'chunk')
+    # chunk_id_list_dev = map_string_2_id_close(chunk_list_dev, alphabet_chunk)
+    # chunk_id_list_test = map_string_2_id_close(chunk_list_test, alphabet_chunk)
     tag_id_list_train, alphabet_tag = map_string_2_id_open(tag_list_train, 'tag')
     tag_id_list_dev = map_string_2_id_close(tag_list_dev, alphabet_tag)
     tag_id_list_test = map_string_2_id_close(tag_list_test, alphabet_tag)
-    return pos_id_list_train, pos_id_list_dev, pos_id_list_test, chunk_id_list_train, chunk_id_list_dev, chunk_id_list_test, \
-           tag_id_list_train, tag_id_list_dev, tag_id_list_test, alphabet_pos, alphabet_chunk, alphabet_tag
+    return pos_id_list_train, pos_id_list_dev, pos_id_list_test, \
+           tag_id_list_train, tag_id_list_dev, tag_id_list_test, alphabet_pos, alphabet_tag
 
 
 def padding(input_sequence, max_len):
@@ -109,9 +109,9 @@ def padding_data(pos_id_list_train, pos_id_list_dev, pos_id_list_test, chunk_id_
 
 
 def construct_tensor_word(word_sentences, unknown_embedd, embedd_words, embedd_vectors, embedd_dim, max_length):
-    X = np.empty([len(word_sentences), max_length, embedd_dim])
+    X = np.empty([len(word_sentences), max_length, embedd_dim]) # shape: (#sentence, max_length of a sentence, dim)
     for i in range(len(word_sentences)):
-        words = word_sentences[i]
+        words = word_sentences[i] # a sentence
         length = len(words)
         for j in range(length):
             word = words[j].lower()
@@ -135,9 +135,9 @@ def construct_tensor_onehot(feature_sentences, max_length, dim):
 
 
 def create_vector_data(word_list_train, word_list_dev, word_list_test, pos_id_list_train, pos_id_list_dev,
-                       pos_id_list_test, chunk_id_list_train, chunk_id_list_dev, chunk_id_list_test, tag_id_list_train,
+                       pos_id_list_test,  tag_id_list_train,
                        tag_id_list_dev, tag_id_list_test, unknown_embedd, embedd_words, embedd_vectors, embedd_dim,
-                       max_length, dim_pos, dim_chunk, dim_tag):
+                       max_length, dim_pos, dim_tag):
     word_train = construct_tensor_word(word_list_train, unknown_embedd, embedd_words, embedd_vectors, embedd_dim, 
                                        max_length)
     word_dev = construct_tensor_word(word_list_dev, unknown_embedd, embedd_words, embedd_vectors, embedd_dim,
@@ -147,51 +147,50 @@ def create_vector_data(word_list_train, word_list_dev, word_list_test, pos_id_li
     pos_train = construct_tensor_onehot(pos_id_list_train, max_length, dim_pos)
     pos_dev = construct_tensor_onehot(pos_id_list_dev, max_length, dim_pos)
     pos_test = construct_tensor_onehot(pos_id_list_test, max_length, dim_pos)
-    chunk_train = construct_tensor_onehot(chunk_id_list_train, max_length, dim_chunk)
-    chunk_dev = construct_tensor_onehot(chunk_id_list_dev, max_length, dim_chunk)
-    chunk_test = construct_tensor_onehot(chunk_id_list_test, max_length, dim_chunk)
+    # chunk_train = construct_tensor_onehot(chunk_id_list_train, max_length, dim_chunk)
+    # chunk_dev = construct_tensor_onehot(chunk_id_list_dev, max_length, dim_chunk)
+    # chunk_test = construct_tensor_onehot(chunk_id_list_test, max_length, dim_chunk)
     tag_train = construct_tensor_onehot(tag_id_list_train, max_length, dim_tag)
     tag_dev = construct_tensor_onehot(tag_id_list_dev, max_length, dim_tag)
     tag_test = construct_tensor_onehot(tag_id_list_test, max_length, dim_tag)
     input_train = word_train
     input_train = np.concatenate((input_train, pos_train), axis=2)
-    input_train = np.concatenate((input_train, chunk_train), axis=2)
+    # input_train = np.concatenate((input_train, chunk_train), axis=2)
     output_train = tag_train
     input_dev = word_dev
     input_dev = np.concatenate((input_dev, pos_dev), axis=2)
-    input_dev = np.concatenate((input_dev, chunk_dev), axis=2)
+    # input_dev = np.concatenate((input_dev, chunk_dev), axis=2)
     output_dev = tag_dev
     input_test = word_test
     input_test = np.concatenate((input_test, pos_test), axis=2)
-    input_test = np.concatenate((input_test, chunk_test), axis=2)
+    # input_test = np.concatenate((input_test, chunk_test), axis=2)
     output_test = tag_test
     return input_train, output_train, input_dev, output_dev, input_test, output_test
 
 
 def create_data(word_dir, vector_dir, train_dir, dev_dir, test_dir):
-    embedd_vectors = np.load(vector_dir)
-    with open(word_dir, 'rb') as handle:
+    embedd_vectors = np.load(vector_dir) #load pre-trained vector. shape (#words, dim)
+    with open(word_dir, 'rb') as handle: #list words. len(#words)
         embedd_words = pickle.load(handle)
     embedd_dim = np.shape(embedd_vectors)[1]
     unknown_embedd = np.random.uniform(-0.01, 0.01, [1, embedd_dim])
-    word_list_train, pos_list_train, chunk_list_train, tag_list_train, num_sent_train, max_length_train = \
+    word_list_train, pos_list_train, tag_list_train, num_sent_train, max_length_train = \
         read_conll_format(train_dir)
-    word_list_dev, pos_list_dev, chunk_list_dev, tag_list_dev, num_sent_dev, max_length_dev = \
+    word_list_dev, pos_list_dev, tag_list_dev, num_sent_dev, max_length_dev = \
         read_conll_format(dev_dir)
-    word_list_test, pos_list_test, chunk_list_test, tag_list_test, num_sent_test, max_length_test = \
+    word_list_test, pos_list_test, tag_list_test, num_sent_test, max_length_test = \
         read_conll_format(test_dir)
-    pos_id_list_train, pos_id_list_dev, pos_id_list_test, chunk_id_list_train, chunk_id_list_dev, chunk_id_list_test, \
-    tag_id_list_train, tag_id_list_dev, tag_id_list_test, alphabet_pos, alphabet_chunk, alphabet_tag = \
-        map_string_2_id(pos_list_train, pos_list_dev, pos_list_test, chunk_list_train, chunk_list_dev, chunk_list_test,
+    pos_id_list_train, pos_id_list_dev, pos_id_list_test, \
+    tag_id_list_train, tag_id_list_dev, tag_id_list_test, alphabet_pos,alphabet_tag = \
+        map_string_2_id(pos_list_train, pos_list_dev, pos_list_test, \
                         tag_list_train, tag_list_dev, tag_list_test)
     max_length = max(max_length_train, max_length_dev, max_length_test)
     input_train, output_train, input_dev, output_dev, input_test, output_test = \
         create_vector_data(word_list_train, word_list_dev, word_list_test, pos_id_list_train, pos_id_list_dev,
-                           pos_id_list_test, chunk_id_list_train, chunk_id_list_dev, chunk_id_list_test,
-                           tag_id_list_train, tag_id_list_dev, tag_id_list_test, unknown_embedd, embedd_words,
-                           embedd_vectors, embedd_dim, max_length, alphabet_pos.size(), alphabet_chunk.size(),
+                           pos_id_list_test, tag_id_list_train, tag_id_list_dev, tag_id_list_test, unknown_embedd, embedd_words,
+                           embedd_vectors, embedd_dim, max_length, alphabet_pos.size(),
                            alphabet_tag.size())
-    return input_train, output_train, input_dev, output_dev, input_test, tag_id_list_test, alphabet_tag, max_length
+    return input_train, output_train, input_dev, output_dev, input_test, tag_id_list_test, alphabet_tag, max_length, alphabet_pos, alphabet_tag
 
 
 def predict_to_file(predicts, tests, alphabet_tag, output_file):
