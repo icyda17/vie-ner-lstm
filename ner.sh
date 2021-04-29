@@ -23,7 +23,6 @@ else
     wget --load-cookie cookie.txt --save-cookie cookie.txt "${url}&$c" -O "${file}"
     rm cookie.txt tmp
 fi
-# python ner.py --word_dir embedding/words.pl --vector_dir embedding/vectors.npy --train_dir data/train_sample.txt --dev_dir data/dev_sample.txt --test_dir data/test_sample.txt --num_lstm_layer 2 --num_hidden_node 64 --dropout 0.5 --batch_size 50 --patience 3
+# !python ner.py --word_dir embedding/words.pl --vector_dir embedding/vectors.npy --train_dir data/data_pos/train_pos2.txt --dev_dir data/data_pos/dev_pos.txt --test_dir data/data_pos/test_pos.txt --num_lstm_layer 2 --num_hidden_node 64 --dropout 0.5 --batch_size 50 --patience 3
 
 ## infer
-# python infer.py 

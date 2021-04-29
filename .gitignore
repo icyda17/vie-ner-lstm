@@ -9,3 +9,4 @@ data/tmp.py
 data/train.txt
 data/dev.txt
 data/test.txt
+*.ipynb
