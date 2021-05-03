@@ -8,9 +8,7 @@ embedding/*
 
 # data
 data/tmp.py
-data/train.txt
-data/dev.txt
-data/test.txt
+data/data_pos
 
 *.ipynb
 # file sample test

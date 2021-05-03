@@ -206,5 +206,5 @@ def predict_to_file(predicts, tests, alphabet_tag, output_file):
 
 
 if __name__ == "__main__":
-    create_data('../vie-nlp/vie-nlp/embedding/words.pl', '../vie-nlp/vie-nlp/embedding/vectors.npy', 'data/train.txt',
-                'data/dev.txt', 'data/dev.txt')
+    create_data('embedding\words.pl', 'embedding\vectors.npy', 'data\data_pos\train_pos2.txt',
+                'data\data_pos\dev_pos.txt', 'data\data_pos\test_pos.txt')

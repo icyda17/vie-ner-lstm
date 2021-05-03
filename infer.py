@@ -10,6 +10,10 @@ model = keras.models.load_model('model')
 embedd_vectors = np.load(r'embedding/vectors.npy') #load pre-trained vector. shape (#words, dim)
 with open(r'embedding/words.pl', 'rb') as handle: #list words. len(#words)
     embedd_words = pickle.load(handle)
+alphabet_pos = Alphabet(name = 'pos', keep_growing=False)
+alphabet_pos.load('model')
+alphabet_tag = Alphabet(name = 'tag')
+alphabet_tag.load('model')
 
 def read_format(input:str):
     word_list = []
@@ -43,10 +47,8 @@ def map_string_2_id_close(string_list, alphabet_string):
 
 
 def map_string_2_id(pos_list_test):
-    alphabet_pos = Alphabet(name = 'pos', keep_growing=False)
-    alphabet_pos.load('model')
     pos_id_list_test = map_string_2_id_close(pos_list_test, alphabet_pos)
-    return pos_id_list_test, alphabet_pos
+    return pos_id_list_test
 
 def construct_tensor_word(word_sentences, unknown_embedd, embedd_words, embedd_vectors, embedd_dim, max_length):
     X = np.empty([len(word_sentences), max_length, embedd_dim]) # shape: (#sentence, max_length of a sentence, dim)
@@ -113,8 +115,6 @@ def create_data(test_input):
 def infer_string(test_input):
     input_test, word_list_test = create_data(test_input)
     predicts = model.predict_classes(input_test, batch_size=50)
-    alphabet_tag = Alphabet(name = 'tag')
-    alphabet_tag.load('model')
     result = []
     tmp = {}
     for i in range(len(word_list_test)):
