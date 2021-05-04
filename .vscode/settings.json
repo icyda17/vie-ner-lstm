@@ -1,3 +1,6 @@
 {
-    "python.pythonPath": "D:\\Program\\Miniconda\\envs\\vie-ner-lstm\\python.exe"
+    "python.pythonPath": "D:\\Program\\Miniconda\\envs\\vie-ner-lstm\\python.exe",
+    "[python]": {
+        "editor.defaultFormatter": "iansan5653.format-python-docstrings"
+    }
 }

@@ -5,6 +5,7 @@ from underthesea import pos_tag
 import re
 from tensorflow import keras
 from alphabet import Alphabet
+from utils import read_conll_format
 
 model = keras.models.load_model('model')
 embedd_vectors = np.load(r'embedding/vectors.npy') #load pre-trained vector. shape (#words, dim)
@@ -90,27 +91,13 @@ def create_data(test_input):
     embedd_dim = np.shape(embedd_vectors)[1]
     unknown_embedd = np.random.uniform(-0.01, 0.01, [1, embedd_dim])
     word_list_test, pos_list_test = read_format(test_input)
-    pos_id_list_test, alphabet_pos = map_string_2_id(pos_list_test)
+    pos_id_list_test = map_string_2_id(pos_list_test)
     max_length = 130 # modify according to train set
     input_test = \
         create_vector_data(word_list_test, pos_id_list_test, unknown_embedd, embedd_words,
                            embedd_vectors, embedd_dim, max_length, alphabet_pos.size())
     return input_test, word_list_test
 
-
-# def infer_to_file(word_dir, vector_dir, test_dir, output_file):
-#     input_test, word_list_test = create_data(test_dir)
-#     predicts = model.predict_classes(input_test, batch_size=50)
-#     alphabet_tag = Alphabet(name = 'tag')
-#     alphabet_tag.load('model')
-#     with codecs.open(output_file, 'w', 'utf-8') as f:
-#         for i in range(len(word_list_test)):
-#             for j in range(len(word_list_test[i])):
-#                 predict = alphabet_tag.get_instance(predicts[i][j])
-#                 if predict == None:
-#                     predict = alphabet_tag.get_instance(predicts[i][j] + 1)
-#                 f.write(word_list_test[i][j] + ' ' + predict + '\n')
-#             f.write('\n')
 
 def infer_string(test_input):
     input_test, word_list_test = create_data(test_input)
@@ -126,5 +113,20 @@ def infer_string(test_input):
                 result.append(tmp)
                 tmp = {}
     return result
+
+
+# def infer_to_file(test_dir, output_file):
+#     word_list, pos_list, tag_list, _, _ = read_conll_format(test_dir)
+#     input_test, word_list_test = create_data(test_dir)
+#     predicts = model.predict_classes(input_test, batch_size=50)
+#     with codecs.open(output_file, 'w', 'utf-8') as f:
+#         for i in range(len(word_list_test)):
+#             for j in range(len(word_list_test[i])):
+#                 predict = alphabet_tag.get_instance(predicts[i][j])
+#                 if predict == None:
+#                     predict = alphabet_tag.get_instance(predicts[i][j] + 1)
+#                 f.write(word_list_test[i][j] + ' ' + predict + '\n')
+#             f.write('\n')
+
 if __name__ == "__main__":
     infer_string('Bên cạnh đó, Shark Đỗ Thị Kim Liên, Nhà sáng lập Ứng dụng bảo hiểm công nghệ LIAN cam kết tiếp tục hành trình “bà đỡ” cho start-up Việt.')
