@@ -1,5 +1,6 @@
 from collections import Counter
 import json
+import codecs
 
 def is_bio_scheme(all_tags):
     """
@@ -123,6 +124,15 @@ def decode_from_bioes(tags):
     flush()
     return res
 
+def decode_all(tag_sequences):
+    # decode from all sequences, each sequence with a unique id
+    ents = []
+    for sent_id, tags in enumerate(tag_sequences):
+        for ent in decode_from_bioes(tags):
+            ent['sent_id'] = sent_id
+            ents += [ent]
+    return ents
+
 def score_by_entity(pred_tag_sequences, gold_tag_sequences, verbose=True):
     """ Score predicted tags at the entity level.
     Args:
@@ -135,15 +145,6 @@ def score_by_entity(pred_tag_sequences, gold_tag_sequences, verbose=True):
     """
     assert(len(gold_tag_sequences) == len(pred_tag_sequences)), \
         "Number of predicted tag sequences does not match gold sequences."
-    
-    def decode_all(tag_sequences):
-        # decode from all sequences, each sequence with a unique id
-        ents = []
-        for sent_id, tags in enumerate(tag_sequences):
-            for ent in decode_from_bioes(tags):
-                ent['sent_id'] = sent_id
-                ents += [ent]
-        return ents
     if is_bio_scheme(gold_tag_sequences):
         gold_tag_sequences = bio2_to_bioes(gold_tag_sequences)
     if is_bio_scheme(pred_tag_sequences): 
@@ -208,7 +209,7 @@ def score_by_entity(pred_tag_sequences, gold_tag_sequences, verbose=True):
     return res
 
 def read_result(input_file):
-    with open(input_file, 'r') as f:
+    with codecs.open(input_file, 'r', 'utf-8') as f:
         pred_list = []
         gold_list = []
         preds = []
@@ -233,6 +234,15 @@ def test_file(input_file):
     pred_list, gold_list = read_result(input_file)
     test(pred_list, gold_list)
 
+def stat_tag(input_file):
+    _, gold_list = read_result(input_file)
+    if is_bio_scheme(gold_list):
+        gold_list = bio2_to_bioes(gold_list)
+    gold_ents = decode_all(gold_list)
+    gold_by_type = Counter()
+    for g in gold_ents:
+        gold_by_type[g['type']] += 1
+    print (json.dumps(gold_by_type, indent=2))        
 if __name__ == "__main__":
     pred_sequences = [['O', 'S-LOC', 'O', 'O', 'B-PER', 'E-PER'],
                     ['O', 'S-MISC', 'O', 'E-ORG', 'O', 'B-PER', 'I-PER', 'E-PER']]
